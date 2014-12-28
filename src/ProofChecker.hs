@@ -8,7 +8,7 @@ import Data.Map as M
 import EFS
 
 checkProof :: EFS -> Proof -> CheckResult
-checkProof efs p = recCheckProof 0 M.empty efs p
+checkProof efs p = recCheckProof 1 M.empty efs p
 
 recCheckProof :: Int -> Map Int Formula -> EFS -> Proof -> CheckResult
 recCheckProof n fMap efs p = case isEmpty p of
@@ -30,7 +30,9 @@ checkAxiom :: Int ->
               EFS ->
               ProofLine ->
               Either (Int, Map Int Formula) CheckResult
-checkAxiom n fMap efs line = Right Correct
+checkAxiom n fMap efs line = case isAxiom efs (sentence line) of
+  True -> Left (n + 1, M.insert n (sentence line) fMap)
+  False -> Right $ NotAxiom n (sentence line)
 
 type LineNo = Int
 

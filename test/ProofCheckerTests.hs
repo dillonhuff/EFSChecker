@@ -8,7 +8,8 @@ import TestUtils
 allProofCheckerTests = do
   testFunction (checkProof simpleEFS) proofCases
 
-simpleEFS = emptyEFS
+simpleEFS =
+  efs ["a", "b"] ["x", "y"] [("P", 1), ("K", 1)] [atomicFormula "P" 1 [str [letter "a"]]]
 
 proofCases =
   [(sProof $ axiomStep $ atomicFormula "P" 1 [str [letter "a"]], correct),

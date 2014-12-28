@@ -7,35 +7,56 @@ module EFS(EFS,
            sProof,
            isEmpty,
            justification,
+           sentence,
            rest,
            firstLine,
            letter,
            axiomStep,
            atomicFormula,
-           emptyEFS) where
+           efs,
+           isAxiom) where
 
-data EFS = EFS {}
+import Data.List as L
+import Data.Set as S
+
+data EFS = EFS {
+  letters :: [EFSSymbol],
+  variables :: [EFSSymbol],
+  predicates :: [(String, Int)],
+  axioms :: Set Formula
+  } deriving (Show)
+
+efs :: [String] ->
+       [String] ->
+       [(String, Int)] ->
+       [Formula] ->
+       EFS
+efs letterNames varNames predicates axioms =
+  EFS (L.map Letter letterNames) (L.map Variable varNames) predicates (S.fromList axioms)
+
+
+isAxiom :: EFS -> Formula -> Bool
+isAxiom efs f = S.member f (axioms efs)
 
 data Formula
   = Atomic String Int [EFSString]
-    deriving (Eq, Show)
+    deriving (Eq, Ord, Show)
 
 atomicFormula predicateName degree arguments =
   Atomic predicateName degree arguments
 
 data EFSString
   = EFSString [EFSSymbol]
-    deriving (Eq, Show)
+    deriving (Eq, Ord, Show)
 
 str = EFSString
 
 data EFSSymbol
   = Letter String
-    deriving (Eq, Show)
+  | Variable String
+    deriving (Eq, Ord, Show)
 
 letter = Letter
-
-emptyEFS = EFS
 
 data Proof = Proof [ProofLine]
              deriving (Show)
@@ -53,10 +74,16 @@ rest :: Proof -> Proof
 rest (Proof (l:ls)) = Proof ls
 
 data ProofLine
-  = Axiom Formula
+  = ProofLine Formula Justification
     deriving (Show)
 
-axiomStep = Axiom
+axiomStep f = ProofLine f Axiom
+
+sentence (ProofLine f _) = f
+
+data Justification
+  = Axiom
+    deriving (Show)
 
 data JustificationType
   = AXIOM
