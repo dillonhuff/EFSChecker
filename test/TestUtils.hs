@@ -1,4 +1,4 @@
-module TestUtils() where
+module TestUtils(testFunction) where
 
 import Test.HUnit
 
