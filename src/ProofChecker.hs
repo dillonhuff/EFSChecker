@@ -24,6 +24,7 @@ checkProofLine :: Int ->
                   Either (Int, Map Int Formula) CheckResult
 checkProofLine n fMap efs line = case justification line of
   AXIOM -> checkAxiom n fMap efs line
+  SUBSTITUTION -> checkSubstitution n fMap efs line
 
 checkAxiom :: Int ->
               Map Int Formula ->
@@ -34,7 +35,12 @@ checkAxiom n fMap efs line = case isAxiom efs (sentence line) of
   True -> Left (n + 1, M.insert n (sentence line) fMap)
   False -> Right $ NotAxiom n (sentence line)
 
-type LineNo = Int
+checkSubstitution :: Int ->
+                     Map Int Formula ->
+                     EFS ->
+                     ProofLine ->
+                     Either (Int, Map Int Formula) CheckResult
+checkSubstitution n fMap efs line = Right correct
 
 data CheckResult
   = Correct

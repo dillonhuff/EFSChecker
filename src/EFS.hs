@@ -3,6 +3,7 @@ module EFS(EFS,
            ProofLine,
            Formula,
            JustificationType(..),
+           LineNo,
            sProof,
            proof,
            isEmpty,
@@ -13,6 +14,7 @@ module EFS(EFS,
            letter,
            var,
            axiomStep,
+           substitutionStep,
            sFormula,
            formula,
            atom,
@@ -22,6 +24,8 @@ module EFS(EFS,
 
 import Data.List as L
 import Data.Set as S
+
+type LineNo = Int
 
 data EFS = EFS {
   letters :: [Symbol],
@@ -92,14 +96,21 @@ data ProofLine
 
 axiomStep f = ProofLine f Axiom
 
+substitutionStep f lineNo var@(Variable x) term =
+  ProofLine f (Substitution lineNo var term)
+substitutionStep _ _ s _ = error $ show s ++ " is not a variable"
+
 sentence (ProofLine f _) = f
 
 data Justification
   = Axiom
+  | Substitution LineNo Symbol Term
     deriving (Show)
 
 data JustificationType
   = AXIOM
+  | SUBSTITUTION
     
 justification :: ProofLine -> JustificationType
-justification _ = AXIOM
+justification (ProofLine _ Axiom) = AXIOM
+justification (ProofLine _ (Substitution _ _ _)) = SUBSTITUTION
