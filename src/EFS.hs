@@ -3,16 +3,20 @@ module EFS(EFS,
            ProofLine,
            Formula,
            JustificationType(..),
-           str,
            sProof,
+           proof,
            isEmpty,
            justification,
            sentence,
            rest,
            firstLine,
            letter,
+           var,
            axiomStep,
-           atomicFormula,
+           sFormula,
+           formula,
+           atom,
+           term,
            efs,
            isAxiom) where
 
@@ -20,8 +24,8 @@ import Data.List as L
 import Data.Set as S
 
 data EFS = EFS {
-  letters :: [EFSSymbol],
-  variables :: [EFSSymbol],
+  letters :: [Symbol],
+  variables :: [Symbol],
   predicates :: [(String, Int)],
   axioms :: Set Formula
   } deriving (Show)
@@ -39,28 +43,37 @@ isAxiom :: EFS -> Formula -> Bool
 isAxiom efs f = S.member f (axioms efs)
 
 data Formula
-  = Atomic String Int [EFSString]
+  = Formula [Atom]
     deriving (Eq, Ord, Show)
 
-atomicFormula predicateName degree arguments =
-  Atomic predicateName degree arguments
+formula = Formula
+sFormula predName degree terms = Formula [atom predName degree terms]
 
-data EFSString
-  = EFSString [EFSSymbol]
+data Atom
+  = Atom String Int [Term]
     deriving (Eq, Ord, Show)
 
-str = EFSString
+atom predicateName degree arguments =
+  Atom predicateName degree arguments
 
-data EFSSymbol
+data Term
+  = Term [Symbol]
+    deriving (Eq, Ord, Show)
+
+term = Term
+
+data Symbol
   = Letter String
   | Variable String
     deriving (Eq, Ord, Show)
 
 letter = Letter
+var = Variable
 
 data Proof = Proof [ProofLine]
              deriving (Show)
 
+proof = Proof
 sProof x = Proof [x]
 
 isEmpty :: Proof -> Bool
